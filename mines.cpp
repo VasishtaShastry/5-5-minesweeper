@@ -5,12 +5,15 @@ int start_flag=0;
 typedef struct mine
 {
 	int a[4][2];	//4-points,2-x,y
-int num,flag;	//num- 1->bomb,2-flag
-int open ;	//0 if not yet explored
+	int a[8];
+	int num,flag;	//flag= 1->bomb,2-flag
+	int open ;	//0 if not yet explored
 }box[25];
 
-void fill_dimension()
+
+void fill_box()
 {
+	//a[][]
 	int x0=0,y0=0;
 	for(int k=0;k<25;k++)
 	{
@@ -23,24 +26,17 @@ void fill_dimension()
 		}
 		y0+=35;
 	}
-}
-
-void fill_box()
-{
+	//flags
+	for(int i=0;i<25;i++)	box[tmp].num=0;
 	for(int i=0;i<10;)
 	{
 		int tmp=rand()%25;
-		if(box[tmp]!=1)	i++,box[tmp]=1,box[tmp].num=-1;
+		if(box[tmp].flag!=1)	i++,box[tmp].flag=1,box[tmp].num=-1;
 	}
-	for(int i=0;i<25;i++)	box[tmp].num=0;
-	for(int i=0;i<25;i++)
-	{
-		//Care has been taken to maintain generality with small changes	
-
-
-
-
-
+	
+	
+	
+}
 void my_mouse(int b,int s,int x,int y)
 {	
 	if(s==GLUT_DOWN)
