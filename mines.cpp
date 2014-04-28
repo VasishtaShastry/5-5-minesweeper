@@ -29,12 +29,12 @@ void fill_box()
 	for(int i=0;i<10;)
 	{
 		int tmp=rand()%25;
-	if(box[tmp]!=1)	i++,box[tmp]=1,box[tmp].num=-1;
-}
-for(int i=0;i<25;i++)	box[tmp].num=0;
-for(int i=0;i<25;i++)
-{
-//Care has been taken to maintain generality with small changes	
+		if(box[tmp]!=1)	i++,box[tmp]=1,box[tmp].num=-1;
+	}
+	for(int i=0;i<25;i++)	box[tmp].num=0;
+	for(int i=0;i<25;i++)
+	{
+		//Care has been taken to maintain generality with small changes	
 
 
 
@@ -44,15 +44,16 @@ void my_mouse(int b,int s,int x,int y)
 {	
 	if(s==GLUT_DOWN)
 	{	
-if(!stat_flag)
-{
-start_flag++;
-	if(start_flag>=3)	stat_flag++;
-}
+		if(!stat_flag)
+		{
+			start_flag++;
+			reneder_start();
+			if(start_flag>=3)	stat_flag++;
+		}
 
 		if(b==GLUT_LEFT_BUTTON)		update_box(check_box(x,y),1);	//open
-	if(b==GLUT_RIGHT_BUTTON)	update_box(check_box(x,y),2);	//flag
-}
+		if(b==GLUT_RIGHT_BUTTON)	handle_flags(check_box(x,y),2);	//flag
+	}
 }
 void my_key(unsigned char key ,int x,int y)
 {
