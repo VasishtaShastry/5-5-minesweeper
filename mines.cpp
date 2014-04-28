@@ -1,4 +1,5 @@
 #include<math.h>
+#include<GL/glut.h>
 int stat_flag=0; //0->starting,1->going on,2->terminated
 int start_flag=0;
 typedef struct mine
@@ -66,3 +67,26 @@ void update_box(int b_num,int type)
 		case 1:	//open
 		case 2:	//flag
 			if(
+	}
+}
+void myinit()
+{
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	glClearColor(1,1,1,1);
+	glColor3f(1.0,0.0,0.0);
+	glOrtho(-500,500,-500,500,-500,500);
+	//glMatrixMode(GL_MODELVIEW);
+}
+void main()
+{
+	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH);
+	glutInitWindowSize(800,600);
+	glutInitWindowPosition(100,100);
+	glutCreateWindow("Minesweeper");
+	glutDisplayFunc(display);
+	glutKeyboardFunc(my_key);
+	glutMouseFunc(my_mouse);
+	myinit();
+	glutMainLoop();
+}
