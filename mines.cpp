@@ -1,7 +1,9 @@
 #include<math.h>
 #include<GL/glut.h>
+#include<unistd.h>
 int stat_flag=0; //0->starting,1->going on,2->terminated
 int start_flag=0;
+int efin=0;	//everything finished
 typedef struct mine
 {
 	int a[4][2];	//4-points,2-x,y
@@ -93,6 +95,26 @@ void update_box(int b_num,int type)
 		case 1:	//open
 		case 2:	//flag
 			if(
+	}
+}
+void display()
+{
+	switch(stat_flag)
+	{
+
+		//strs-starting
+		case 0:char str1[5][50];
+		char str2[2][20];
+		str2[0]="5*5 Minesweeper";
+		str2[1]="Rules and Directions";
+		str1[0]="1.10 random ones of 25 following boxex have bombs";
+		str1[1]="2.Guess the first box where bomb may not be present";
+		
+			break;
+		case 1://draw box
+			break;
+		case 2://strs ending
+		efin=1;	
 	}
 }
 void myinit()
