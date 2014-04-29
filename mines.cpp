@@ -20,7 +20,7 @@ void fill_box()
 	for(int k=0;k<25;k++)
 	{
 		x0=10;
-		for(int i=0;i<5;i++)
+		for(int i=0;i<4;i++)
 		{
 			box[k].a[i][o]=x0;
 			box[k].a[i][1]=y0;
@@ -98,20 +98,50 @@ void update_box(int b_num,int type)
 	}
 }
 void display()
-{
+{	//display 5*5 minesweeper
+	//vasi
+	strg[]
 	switch(stat_flag)
 	{
 
 		//strs-starting
 		case 0:char str1[5][50];
-		char str2[2][20];
-		str2[0]="5*5 Minesweeper";
+		char str2[4][20];
 		str2[1]="Rules and Directions";
-		str1[0]="1.10 random ones of 25 following boxex have bombs";
-		str1[1]="2.Guess the first box where bomb may not be present";
+		str1[0]="1.10 random ones of 25 following boxex have bombs.";
+		str1[]="Main aim of the game is to explore all boxes";
+		str1[]="which does not contain a bomb"; 
+		str1[10]="2.Use Left mouse button to open a box."
+		str1[11]="if you try to open a box which has a bomb";
+		str1[4]="you'll be out of the game."
+		str1[1]="3.Guess the first box where bomb may not be present.";
+		str1[2]="The opened box will give you the clue for next one.";
+		str1[3]="4.Number present in the explored box will tell you";
+		str1[4]="how many adjecent(atleast 1 common vertex) boxes have";
+		str2[2]="bombs.";
+		str1[7]="5.You can keep flags on boxes on which you have doubt.";
+		str1[8]="you can use atmost 10 flags.";
+		str1[9]="Use Right mouse button to place a flag.";
+		str1[]="If you feel that you have got same number of bombs";
+		str1[]="around the same as mentioned in it,press 'e' on the box";
+		str1[]="to open other adjecent boxes all at a time.";
+		str1[]="ALL THE BEST"
+		
 		
 			break;
 		case 1://draw box
+			for(int i1=0;i1<25;i1++)
+			{
+				
+				glBegin(GL_LINE_LOOP)
+				glVertex2fv(box[i1].a[0]);
+				glVertex2fv(box[i1].a[1]);
+				glVertex2fv(box[i1].a[2]);
+				glVertex2fv(box[i1].a[3]);
+				glEnd();
+			}
+			//display b,f,num
+				
 			break;
 		case 2://strs ending
 		efin=1;	
