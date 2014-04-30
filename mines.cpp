@@ -2,8 +2,8 @@
 #include<GL/glut.h>
 #include<unistd.h>
 int stat_flag=0; //0->starting,1->going on,2->terminated
-int start_flag=0;
-int efin=0;	//everything finished
+int start_flag=0; //displaying rules 
+int efin=0;	//everything finished 1->won,2->game over,3->pressed q
 typedef struct mine
 {
 	int a[4][2];	//4-points,2-x,y
@@ -11,7 +11,11 @@ typedef struct mine
 	int num,flag;	//flag= 1->bomb,2-flag
 	int open ;	//0 if not yet explored
 }box[25];
-
+//0   1  2  3  4 
+//5   6  7  8  9          box structure
+//10 11 12 13 14
+//15 16 17 18 19
+//20 21 22 23 24
 
 void fill_box()
 {
@@ -36,11 +40,6 @@ void fill_box()
 		if(box[tmp].flag!=1)	i++,box[tmp].flag=1,box[tmp].num=-1;
 	}
 	//adj[]
-0   1  2  3  4 
-5   6  7  8  9
-10 11 12 13 14
-15 16 17 18 19
-20 21 22 23 24
 	box[0].adj[]={1,6,5,-1};
 	box[1].adj[]={0,6,5,7,2,-1};
 	box[2].adj[]={1,6,7,8,3,-1};
@@ -73,11 +72,12 @@ void my_mouse(int b,int s,int x,int y)
 {	
 	if(s==GLUT_DOWN)
 	{	
-		if(!stat_flag)
+		if
+		if(!stat_flag || start_flag<6)
 		{
 			start_flag++;
-			reneder_start();
-			if(start_flag>=3)	stat_flag++;
+			display();
+			if(start_flag>=6)	stat_flag++,start_flag=10;
 		}
 
 		if(b==GLUT_LEFT_BUTTON)		update_box(check_box(x,y),1);	//open
@@ -87,6 +87,8 @@ void my_mouse(int b,int s,int x,int y)
 void my_key(unsigned char key ,int x,int y)
 {
 	if(key==’e’)	explore_box(check_box(x,y));
+	if(key=='q')	efin=3,stat_flag=2,display();
+	
 }
 void update_box(int b_num,int type)
 {
@@ -100,34 +102,50 @@ void update_box(int b_num,int type)
 void display()
 {	//display 5*5 minesweeper
 	//vasi
-	strg[]
+	char strg[2][10];
+	strg[0]="5*5 Minesweeper"
+	strg[1]="by-Vasishta shastry & Uttam"
 	switch(stat_flag)
 	{
 
 		//strs-starting
-		case 0:char str1[5][50];
-		char str2[4][20];
-		str2[1]="Rules and Directions";
+		case 0:char str1[16][50];
+		char str2[3][20];
+		str2[0]="Rules and Directions";
 		str1[0]="1.10 random ones of 25 following boxex have bombs.";
-		str1[]="Main aim of the game is to explore all boxes";
-		str1[]="which does not contain a bomb"; 
-		str1[10]="2.Use Left mouse button to open a box."
-		str1[11]="if you try to open a box which has a bomb";
-		str1[4]="you'll be out of the game."
-		str1[1]="3.Guess the first box where bomb may not be present.";
-		str1[2]="The opened box will give you the clue for next one.";
-		str1[3]="4.Number present in the explored box will tell you";
-		str1[4]="how many adjecent(atleast 1 common vertex) boxes have";
-		str2[2]="bombs.";
-		str1[7]="5.You can keep flags on boxes on which you have doubt.";
-		str1[8]="you can use atmost 10 flags.";
-		str1[9]="Use Right mouse button to place a flag.";
-		str1[]="If you feel that you have got same number of bombs";
-		str1[]="around the same as mentioned in it,press 'e' on the box";
-		str1[]="to open other adjecent boxes all at a time.";
-		str1[]="ALL THE BEST"
+		str1[1]="Main aim of the game is to explore all boxes";
+		str1[2]="which does not contain a bomb"; 
+		str1[3]="2.Use Left mouse button to open a box."
+		str1[4]="if you try to open a box which has a bomb";
+		str1[5]="you'll be out of the game."
+		str1[6]="3.Guess the first box where bomb may not be present.";
+		str1[7]="The opened box will give you the clue for next one.";
+		str1[8]="4.Number present in the explored box will tell you";
+		str1[9]="how many adjecent(atleast 1 common vertex) boxes have";
+		str2[1]="bombs.";
+		str1[10]="5.You can keep flags on boxes on which you have doubt.";
+		str1[11]="you can use atmost 10 flags.";
+		str1[12]="Use Right mouse button to place a flag.";
+		str1[13]="If you feel that you have got same number of bombs";
+		str1[14]="around the same as mentioned in it,press 'e' on the box";
+		str1[15]="to open other adjecent boxes all at a time.";
+		str2[2]="ALL THE BEST"
 		
-		
+		switch(start_flag)
+		{
+			case 1://rule 1
+			break;
+			case 2://rule 2
+			break;
+			case 3://rule 3
+			break;
+			case 4://rule 4
+			break;
+			case 5://rule 5
+			break;
+			case 6://rule 6
+			break;
+		}
 			break;
 		case 1://draw box
 			for(int i1=0;i1<25;i1++)
@@ -144,7 +162,16 @@ void display()
 				
 			break;
 		case 2://strs ending
-		efin=1;	
+		switch(efin)
+		{
+			case 1://won
+			break;
+			case 2://lost
+			break;
+			case 3:// pressed q 
+			break;
+		}
+			
 	}
 }
 void myinit()
