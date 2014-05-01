@@ -23,12 +23,14 @@ void fill_box()
 	int x0=0,y0=30;
 	for(int k=0;k<25;k++)
 	{
-		x0=10;
-		for(int i=0;i<4;i++)
+		for(int i=0;i<5;i++)
 		{
-			box[k].a[i][o]=x0;
-			box[k].a[i][1]=y0;
-			x0+=35;
+			for(int j=0;j<5;j++)
+			{
+				box[k].a[i][o]=x0;
+				box[k].a[i][1]=y0;
+				box[k].a[i][o]=x0;
+				box[k].a[i][1]=y0;
 		}
 		y0+=35;
 	}
@@ -68,6 +70,10 @@ void fill_box()
 	//box structure
 	
 }
+int check_box(int x,int y)
+{
+	if(x>10 && x<190)
+}
 void my_mouse(int b,int s,int x,int y)
 {	
 	if(s==GLUT_DOWN)
@@ -83,9 +89,12 @@ void my_mouse(int b,int s,int x,int y)
 			if(start_flag>=6)	stat_flag++,start_flag=10;
 		}
 		
+		if(stat_flag==1)
+		{
+			if(b==GLUT_LEFT_BUTTON)		update_box(check_box(x,y),1);	//open
+			if(b==GLUT_RIGHT_BUTTON)	handle_flags(check_box(x,y),2);	//flag
 
-		if(b==GLUT_LEFT_BUTTON)		update_box(check_box(x,y),1);	//open
-		if(b==GLUT_RIGHT_BUTTON)	handle_flags(check_box(x,y),2);	//flag
+		}
 	}
 }
 void my_key(unsigned char key ,int x,int y)
