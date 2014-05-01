@@ -20,7 +20,7 @@ typedef struct mine
 void fill_box()
 {
 	//a[][]
-	int x0=0,y0=0;
+	int x0=0,y0=30;
 	for(int k=0;k<25;k++)
 	{
 		x0=10;
@@ -72,13 +72,17 @@ void my_mouse(int b,int s,int x,int y)
 {	
 	if(s==GLUT_DOWN)
 	{	
-		if
-		if(!stat_flag || start_flag<6)
-		{
+		//starting
+		
+		if(start_flag<6)
+		{	
+			if(x>80 && x<120)	if(y>10 && y<30)	stat_flag++,start_flag=10;
+			
 			start_flag++;
 			display();
 			if(start_flag>=6)	stat_flag++,start_flag=10;
 		}
+		
 
 		if(b==GLUT_LEFT_BUTTON)		update_box(check_box(x,y),1);	//open
 		if(b==GLUT_RIGHT_BUTTON)	handle_flags(check_box(x,y),2);	//flag
@@ -103,8 +107,9 @@ void display()
 {	//display 5*5 minesweeper
 	//vasi
 	char strg[2][10];
-	strg[0]="5*5 Minesweeper"
-	strg[1]="by-Vasishta shastry & Uttam"
+	strg[0]="5*5 Minesweeper";
+	strg[1]="by-Vasishta shastry & Uttam";
+	strg[2]="Made in Bharath";
 	switch(stat_flag)
 	{
 
@@ -162,13 +167,20 @@ void display()
 				
 			break;
 		case 2://strs ending
+		char str2[][50];
+		str2[0]="Thank You For Playing This Game";
+		str2[1]="We Hope You Enjoyed The Game";
 		switch(efin)
 		{
 			case 1://won
+			str2[2]="Congadulations!! You have Won the Game";
 			break;
 			case 2://lost
+			str2[3]="Oops !! You lost ; Better Luck Next Time";
+			
 			break;
 			case 3:// pressed q 
+			str2[4]="You Have Decided To Quit The Game.";
 			break;
 		}
 			
@@ -180,18 +192,20 @@ void myinit()
 	//glLoadIdentity();
 	glClearColor(1,1,1,1);
 	glColor3f(1.0,0.0,0.0);
-	glOrtho(-500,500,-500,500,-500,500);
+	glOrtho2D(0,200,0,300);
 	//glMatrixMode(GL_MODELVIEW);
 }
 void main()
-{
-	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH);
-	glutInitWindowSize(800,600);
-	glutInitWindowPosition(100,100);
-	glutCreateWindow("Minesweeper");
-	glutDisplayFunc(display);
-	glutKeyboardFunc(my_key);
-	glutMouseFunc(my_mouse);
-	myinit();
-	glutMainLoop();
+{	
+	
+		glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH);
+		glutInitWindowSize(800,600);
+		glutInitWindowPosition(100,100);
+		glutCreateWindow("Minesweeper");
+		glutDisplayFunc(display);
+		glutKeyboardFunc(my_key);
+		glutMouseFunc(my_mouse);
+		myinit();
+		glutMainLoop();
+
 }
