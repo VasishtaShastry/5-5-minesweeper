@@ -5,12 +5,14 @@
 #define NxN_MineSweeper 5
 
 int start_flag=0; //displaying rules
-enum {
+typedef enum {	
+	GAME_NOT_STARTED,
         GAME_OVER,
         GAME_WON,
         GAME_QUIT,
         GAME_INPROGRESS,
-} game_status = GAME_INPROGRESS;
+} status_t;
+status_t game_status = GAME_NOT_STARTED;
 
 #define BOX_WIDTH 35
 #define BOX_HEIGHT BOX_WIDTH
@@ -43,7 +45,11 @@ isOutSideBigBoxScope (int x_co, int y_co)
 
         return FALSE;
 }
-
+inline void changeGameStatus (status_t status)
+{ 	
+	game_status = status;
+	start_flag=10;
+}
 typedef enum {
         FLAG_0_AROUND = 0,
         FLAG_1_AROUND,
@@ -163,8 +169,7 @@ myMouse (int button, int mouse_status, int x, int y)
         if (start_flag < 6) {
                 if (x > 80 && x < 120)
                         if (y > 10 && y < 30) {
-                                stat_flag++;
-                                start_flag=10;
+        			changeGameStatus (GAME_INPREOGRESS);  
                         }
 
                 start_flag++;
@@ -172,8 +177,7 @@ myMouse (int button, int mouse_status, int x, int y)
                 display();
 
                 if (start_flag>=6) {
-                        stat_flag++;
-                        start_flag=10;
+                        changeGameStatus (GAME_INPREOGRESS);
                 }
         }
 
@@ -204,6 +208,8 @@ updateBox (int bNum, int type)
         case GLUT_LEFT_BUTTON:
                 switch (box [bNum].dispStat) {
                 case BOX_CLOSED:
+                	box [bNum].dispStat = BOX_OPENED;
+                	
                         if (box [bNum].flag == FLAG_BOMB)
                                 game_status = GAME_OVER;
 
@@ -243,35 +249,36 @@ updateBox (int bNum, int type)
 void display()
 {	//display 5*5 minesweeper
 	//vasi
-	char strg[2][10];
-	strg[0]="5*5 Minesweeper";
-	strg[1]="by-Vasishta shastry & Uttam";
-	strg[2]="Made in Bharath";
-	switch(stat_flag)
+	glClearColor(1,1,1,1);
+	char *str[50];
+	str [12] = "5*5 Minesweeper";
+	str [20] = "by-Vasishta shastry & Uttam";
+	str [21] = "Made in Bharath";
+	switch(game_status)
 	{
 
 		//strs-starting
-		case 0:char str1[16][50];
-		char str2[3][20];
-		str2[0]="Rules and Directions";
-		str1[0]="1.10 random ones of 25 following boxex have bombs.";
-		str1[1]="Main aim of the game is to explore all boxes";
-		str1[2]="which does not contain a bomb";
-		str1[3]="2.Use Left mouse button to open a box."
-		str1[4]="if you try to open a box which has a bomb";
-		str1[5]="you'll be out of the game."
-		str1[6]="3.Guess the first box where bomb may not be present.";
-		str1[7]="The opened box will give you the clue for next one.";
-		str1[8]="4.Number present in the explored box will tell you";
-		str1[9]="how many adjecent(atleast 1 common vertex) boxes have";
-		str2[1]="bombs.";
-		str1[10]="5.You can keep flags on boxes on which you have doubt.";
-		str1[11]="you can use atmost 10 flags.";
-		str1[12]="Use Right mouse button to place a flag.";
-		str1[13]="If you feel that you have got same number of bombs";
-		str1[14]="around the same as mentioned in it,press 'e' on the box";
-		str1[15]="to open other adjecent boxes all at a time.";
-		str2[2]="ALL THE BEST"
+		case GAME_NOT_STARTED:
+		
+		str [1] = "Rules and Directions";
+		str [2] = "1.10 random ones of 25 following boxex have bombs.";
+		str [3] = "Main aim of the game is to explore all boxes";
+		str [4] = "which does not contain a bomb";
+		str [5] = "2.Use Left mouse button to open a box."
+		str [5] = "if you try to open a box which has a bomb";
+		str [7] = "you'll be out of the game."
+		str [8] = "3.Guess the first box where bomb may not be present.";
+		str [9] = "The opened box will give you the clue for next one.";
+		str [10] = "4.Number present in the explored box will tell you";
+		str [11] = "how many adjecent(atleast 1 common vertex) boxes have";
+		str [12] = "bombs.";
+		str [13] ="5.You can keep flags on boxes on which you have doubt.";
+		str [14] ="you can use atmost 10 flags.";
+		str [15] ="Use Right mouse button to place a flag.";
+		str [16] = "If you feel that you have got same number of bombs";
+		str [17] = "around the same as mentioned in it,press 'e' on the box";
+		str [18] = "to open other adjecent boxes all at a time.";
+		str [19] = "ALL THE BEST"
 
 		switch(start_flag) {
 			case 1://rule 1
@@ -288,7 +295,8 @@ void display()
 			break;
 		}
 			break;
-		case 1://draw box
+			
+		case GAME_INPROGRESS://draw box
 			for(int i1=0;i1<25;i1++)
 			{
 
@@ -302,21 +310,27 @@ void display()
 			//display b,f,num
 
 			break;
-		case 2://strs ending
+			
+		case GAME_OVER://strs ending
+			str2[3]="Oops !! You lost ; Better Luck Next Time";
+		case GAME_QUIT:
+			str2[4]="You Have Decided To Quit The Game.";
+		case GAME_WON:
+			str2[2]="Congadulations!! You have Won the Game";
 		char str2[][50];
 		str2[0]="Thank You For Playing This Game";
 		str2[1]="We Hope You Enjoyed The Game";
 		switch (game_status)
 		{
 			case 1://won
-			str2[2]="Congadulations!! You have Won the Game";
+			
 			break;
 			case 2://lost
-			str2[3]="Oops !! You lost ; Better Luck Next Time";
+			
 
 			break;
 			case 3:// pressed q
-			str2[4]="You Have Decided To Quit The Game.";
+			
 			break;
 		}
 
