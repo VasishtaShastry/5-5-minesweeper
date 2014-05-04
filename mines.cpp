@@ -44,7 +44,7 @@ changeGameStatus (status_t status)
 //20 21 22 23 24
 
 void
-fillAdjBoxList ()
+initAdjBoxList ()
 {
 	box [0].adjBox [] = {1, 6, 5, -1};
 	box [1].adjBox [] = {0, 6, 5, 7, 2, -1};
@@ -74,24 +74,7 @@ fillAdjBoxList ()
 }
 
 void
-setAppropriateFlag ()
-{
-        int     i       = 0;
-        int     j       = 0;
-
-        for (i = 0; i < NxN_MineSweeper; i++) {
-                if (box [i].flag == FLAG_BOMB)
-                        continue;
-
-                for (j = 0; box [i].adjBox [j] != -1; j++) {
-                        if (box [box [i].adjBox [j]].flag == FLAG_BOMB)
-                                box [i].flag ++;
-                }
-        }
-}
-
-void
-fillBoxCornersGUI ()
+initBoxCornersGUI ()
 {
         int     x0      = 10;
         int     y0      = 30;
@@ -122,12 +105,13 @@ fillBoxCornersGUI ()
 }
 
 void
-fillBox()
+initBox ()
 {
         int     i       = 0;
         int     tmp     = -1;
 
-        fillBoxCornersGUI ();
+        initBoxCornersGUI ();
+        initAdjBoxList ();
 
         /* Below for loop places the bomb in random 10 boxes */
 	for (i = 0; i < 10;) {
@@ -136,12 +120,15 @@ fillBox()
 		if (box [tmp].flag != FLAG_BOMB) {
                         i++;
                         box [tmp].flag = FLAG_BOMB;
+
+                        /**
+                         * Update the surrounding boxes flag to account for
+                         * this bomb
+                         */
+                        for (j = 0; box [tmp].adjBox [j] != -1; j++)
+                                box [box [tmp].adjBox [j]].flag ++;
                 }
 	}
-
-        fillAdjBoxList ();
-
-        setAppropriateFlag ();
 }
 
 /* TODO: Check for correctness of the algo below */
@@ -245,9 +232,28 @@ updateBox (int bNum, int type)
 	}
 }
 
-void display()
-{	//display 5*5 minesweeper
-	//vasi
+void
+myFunction ()
+{
+        for (int o = 0;o<25;o++){
+                switch (box [i].dispStat){
+                        case BOX_MARKED:
+                        realDisplay(box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [0]);
+                        break;
+                        case BOX_OPENED:
+                        switch (box [i].flag){
+                                realDislay (box [i].cornersGUI [3][0]+10,
+                                            box [i].cornersGUI [3][1]-10,
+                                            numberToStr (box [i].flag));
+                        }
+                }
+
+        }
+}
+
+void
+display ()
+{
 	glClearColor(1,1,1,1);
 	char *str[50];
 	str [12] = "5*5 Minesweeper";
@@ -336,37 +342,7 @@ void display()
 			strdisp [8] = '8';
 			strdisp [9] = '0';
 
-			for (int o = 0;o<25;o++){
-
-				switch (box [i].dispStat){
-					case BOX_MARKED:
-					realDisplay(box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [0]);
-					break;
-					case BOX_OPENED:
-					switch (box [i].flag){
-						case FLAG_0_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [9]);
-						case FLAG_1_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [1]);
-						case FLAG_2_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [2]);
-						case FLAG_3_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [3]);
-						case FLAG_4_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [4]);
-						case FLAG_5_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [5]);
-						case FLAG_6_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [6]);
-						case FLAG_7_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [7]);
-						case FLAG_8_AROUND:
-						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [8]);
-
-					}
-				}
-
-			}
+                        myFunction ();
 			break;
 		case GAME_OVER://strs ending
 			str [23] = "Oops !! You lost ; Better Luck Next Time";
@@ -406,7 +382,7 @@ void main ()
         glutInitWindowSize (800,600);
         glutInitWindowPosition (100,100);
         glutCreateWindow ("Minesweeper");
-        fillBox ();
+        initBox ();
         glutDisplayFunc (display);
         glutKeyboardFunc (myKey);
         glutMouseFunc (myMouse);
