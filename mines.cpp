@@ -254,6 +254,11 @@ void display()
 	str [12] = "5*5 Minesweeper";
 	str [20] = "by-Vasishta shastry & Uttam";
 	str [21] = "Made in Bharath";
+	
+	realDisplay (280,150,str [12]);
+	realDisplay (20,20,str [20]);
+	realDisplay (250,20,str [21]);
+	
 	switch(game_status)
 	{
 
@@ -265,7 +270,7 @@ void display()
 		str [3] = "Main aim of the game is to explore all boxes";
 		str [4] = "which does not contain a bomb";
 		str [5] = "2.Use Left mouse button to open a box."
-		str [5] = "if you try to open a box which has a bomb";
+		str [6] = "if you try to open a box which has a bomb";
 		str [7] = "you'll be out of the game."
 		str [8] = "3.Guess the first box where bomb may not be present.";
 		str [9] = "The opened box will give you the clue for next one.";
@@ -275,24 +280,36 @@ void display()
 		str [13] ="5.You can keep flags on boxes on which you have doubt.";
 		str [14] ="you can use atmost 10 flags.";
 		str [15] ="Use Right mouse button to place a flag.";
-		str [16] = "If you feel that you have got same number of bombs";
-		str [17] = "around the same as mentioned in it,press 'e' on the box";
-		str [18] = "to open other adjecent boxes all at a time.";
 		str [19] = "ALL THE BEST"
 
 		switch(start_flag) {
 			case 1://rule 1
+			realDisplay (150,250,str [1]);
+			realDisplay (80,200,str [2]);
+			realDisplay (80,160,str [3]);
+			realDisplay (80,120,str [4]);
 			break;
 			case 2://rule 2
+			realDisplay (80,200,str [5]);
+			realDisplay (80,160,str [6]);
+			realDisplay (80,120,str [7]);
 			break;
 			case 3://rule 3
+			realDisplay (80,200,str [8]);
+			realDisplay (80,120,str [9]);
 			break;
 			case 4://rule 4
+			realDisplay (80,200,str [10]);
+			realDisplay (80,160,str [11]);
+			realDisplay (150,120,str [12]);
 			break;
 			case 5://rule 5
+			realDisplay (80,200,str [13]);
+			realDisplay (120,160,str [14]);
+			realDisplay (80,120,str [15]);
+			realDisplay (150,50,str [19]);
 			break;
-			case 6://rule 6
-			break;
+		
 		}
 			break;
 			
@@ -308,31 +325,68 @@ void display()
 				glEnd();
 			}
 			//display b,f,num
-
-			break;
+			char *strdisp[1];
+			strdisp [0] = 'F';
+			strdisp [1] = '1';
+			strdisp [2] = '2';
+			strdisp [3] = '3';
+			strdisp [4] = '4';
+			strdisp [5] = '5';
+			strdisp [6] = '6';
+			strdisp [7] = '7';
+			strdisp [8] = '8';
+			strdisp [9] = '0';
 			
+			for (int o = 0;o<25;o++){
+				
+				switch (box [i].dispStat){
+					case BOX_MARKED:	
+					realDisplay(box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [0]);
+					break;
+					case BOX_OPENED:
+					switch (box [i].flag){
+						case FLAG_0_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [9]);
+						case FLAG_1_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [1]);
+						case FLAG_2_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [2]);
+						case FLAG_3_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [3]);
+						case FLAG_4_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [4]);
+						case FLAG_5_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [5]);
+						case FLAG_6_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [6]);
+						case FLAG_7_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [7]);
+						case FLAG_8_AROUND:
+						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [8]);
+						
+					}
+				}
+				
+			}
+			break;
 		case GAME_OVER://strs ending
-			str2[3]="Oops !! You lost ; Better Luck Next Time";
+			str [23] = "Oops !! You lost ; Better Luck Next Time";
+			realDisplay(100,160,str [23]);
+			break;
 		case GAME_QUIT:
-			str2[4]="You Have Decided To Quit The Game.";
+			str [24] = "You Have Decided To Quit The Game.";
+			realDisplay(100,160,str [24]);
+			break
 		case GAME_WON:
-			str2[2]="Congadulations!! You have Won the Game";
-		char str2[][50];
-		str2[0]="Thank You For Playing This Game";
-		str2[1]="We Hope You Enjoyed The Game";
-		switch (game_status)
-		{
-			case 1://won
+			str [25] = "Congadulations!! You have Won the Game";
+			str [26]="Thank You For Playing This Game";
+			str [27]="We Hope You Enjoyed The Game";
+			realDisplay(100,160,str [25]);
 			
-			break;
-			case 2://lost
-			
-
-			break;
-			case 3:// pressed q
-			
-			break;
-		}
+		
+		
+	
+	
 
 	}
 }
