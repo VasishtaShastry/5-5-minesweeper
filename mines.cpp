@@ -1,23 +1,12 @@
 #include<math.h>
 #include<GL/glut.h>
 #include<unistd.h>
+#include "mines.h"
 
-#define NxN_MineSweeper 5
-
-int start_flag=0; //displaying rules
-typedef enum {	
-	GAME_NOT_STARTED,
-        GAME_OVER,
-        GAME_WON,
-        GAME_QUIT,
-        GAME_INPROGRESS,
-} status_t;
-status_t game_status = GAME_NOT_STARTED;
-
-#define BOX_WIDTH 35
-#define BOX_HEIGHT BOX_WIDTH
-
-int bigBoxCornersGUI [4][2] = {
+status_t        game_status     = GAME_NOT_STARTED;
+int             start_flag      = 0; //displaying rules
+mine_box_t      box [25]        = {0,};
+int bigBoxCornersGUI [4][2]     = {
         {10, 210},                                      {190, 210},
              /*----------------------------------------*
               |                                        |
@@ -28,11 +17,6 @@ int bigBoxCornersGUI [4][2] = {
               *----------------------------------------*/
         {10, 30},                                       {190, 30}
 };
-
-typedef enum {
-        FALSE = 0,
-        TRUE
-} myBoolean_t;
 
 inline myBoolean_t
 isOutSideBigBoxScope (int x_co, int y_co)
@@ -45,44 +29,13 @@ isOutSideBigBoxScope (int x_co, int y_co)
 
         return FALSE;
 }
-inline void changeGameStatus (status_t status)
-{ 	
+
+inline void
+changeGameStatus (status_t status)
+{
 	game_status = status;
 	start_flag=10;
 }
-typedef enum {
-        FLAG_0_AROUND = 0,
-        FLAG_1_AROUND,
-        FLAG_2_AROUND,
-        FLAG_3_AROUND,
-        FLAG_4_AROUND,
-        FLAG_5_AROUND,
-        FLAG_6_AROUND,
-        FLAG_7_AROUND,
-        FLAG_8_AROUND,
-        FLAG_BOMB,
-} flag_t;
-
-typedef enum {
-        BOX_CLOSED,
-        BOX_OPENED,
-        BOX_MARKED
-} box_stat_t;
-
-struct mine {
-        /* Holds the GUI corner points of the box */
-	int         cornersGUI [4][2];
-
-        /* Holds the box numbers of the adjucent boxes.
-           adj_box [0] contains the number of adjucent boxes */
-	int         adj_box [9];
-
-        /* Holds the value of the box that should be displayed when opened */
-        flag_t      flag;
-
-        /* Holds the display status of the box */
-        box_stat_t  dispStat;
-} box[25];
 
 //0   1  2  3  4
 //5   6  7  8  9          box structure
@@ -90,59 +43,105 @@ struct mine {
 //15 16 17 18 19
 //20 21 22 23 24
 
-void fill_box()
+void
+fillAdjBoxList ()
 {
-	//a[][]
-	int     x0=0;
-        int     y0 =30;
+	box [0].adjBox [] = {1, 6, 5, -1};
+	box [1].adjBox [] = {0, 6, 5, 7, 2, -1};
+	box [2].adjBox [] = {1, 6, 7, 8, 3, -1};
+	box [3].adjBox [] = {2, 7, 8, 9, 4, -1};
+	box [4].adjBox [] = {8, 3, 9, -1};
+	box [5].adjBox [] = {0, 1, 6, 11, 10, -1};
+	box [6].adjBox [] = {0, 1, 2, 5, 7, 12, 11 ,10, -1};
+	box [7].adjBox [] = {1, 2, 3, 8, 13, 12, 11, 6, -1};
+	box [8].adjBox [] = {2, 3, 4, 7, 12, 13, 14, 9, -1};
+	box [9].adjBox [] = {3, 4, 8, 13, 14, -1};
+	box [10].adjBox [] = {11, 6, 5, 16, 15, -1};
+	box [11].adjBox [] = {5, 6, 7, 12, 17, 16, 15, 10, -1};
+	box [12].adjBox [] = {6, 7, 8, 13, 18, 17, 16, 11, -1};
+	box [13].adjBox [] = {17, 18, 19, 14, 9, 8, 7, 12, -1};
+	box [14].adjBox [] = {9, 8, 13, 18, 19, -1};
+	box [15].adjBox [] = {10, 11, 16, 21, 20, -1};
+	box [16].adjBox [] = {10, 15, 20, 21, 22, 17, 12, 11, -1};
+	box [17].adjBox [] = {21, 22, 23, 18, 13, 12, 11, 16, -1};
+	box [18].adjBox [] = {22, 23, 24, 19, 14, 13, 12, 17, -1};
+	box [19].adjBox [] = {24, 23, 18, 13, 14, -1};
+	box [20].adjBox [] = {15, 16, 21, -1};
+	box [21].adjBox [] = {17, 16, 15, 20, 22, -1};
+	box [22].adjBox [] = {21, 16, 17, 18, 23, -1};
+	box [23].adjBox [] = {22, 17, 24, 18, 19, -1};
+	box [24].adjBox [] = {18, 19, 23, -1};
+}
 
-	for (int k = 0; k < 25; k++) {
-		for(int i=0;i<5;i++) {
-			for(int j=0;j<5;j++) {
-				box[k].a[0][o]=x0;
-				box[k].a[1][1]=y0;
-				box[k].a[2][o]=x0;
-				box [k].a [3][1] = y0;
-                        }
-		}
-		y0+=35;
+void
+setAppropriateFlag ()
+{
+        int     i       = 0;
+        int     j       = 0;
+
+        for (i = 0; i < NxN_MineSweeper; i++) {
+                if (box [i].flag == FLAG_BOMB)
+                        continue;
+
+                for (j = 0; box [i].adjBox [j] != -1; j++) {
+                        if (box [box [i].adjBox [j]].flag == FLAG_BOMB)
+                                box [i].flag ++;
+                }
+        }
+}
+
+void
+fillBoxCornersGUI ()
+{
+        int     x0      = 10;
+        int     y0      = 30;
+
+	for (i = 0; i < TOTAL_BOXES; i++) {
+                /* Bottom left */
+                box [i].a [0][0] = x0;
+                box [i].a [0][1] = y0;
+
+                /* Bottom right */
+                box [i].a [1][0] = x0 + 35;
+                box [i].a [1][1] = y0;
+
+                /* Top right */
+                box [i].a [2][0] = x0 + 35;
+                box [i].a [2][1] = y0 + 35;
+
+                /* Top left */
+                box [i].a [3][0] = x0;
+                box [i].a [3][1] = y0 + 35;
+
+                x0 += 35;
+                if (((i + 1) % 5) == 0) {
+                        x0 = 10;
+                        y0 += 35;
+                }
+	}
+}
+
+void
+fillBox()
+{
+        int     i       = 0;
+        int     tmp     = -1;
+
+        fillBoxCornersGUI ();
+
+        /* Below for loop places the bomb in random 10 boxes */
+	for (i = 0; i < 10;) {
+		tmp = rand() % TOTAL_BOXES;
+
+		if (box [tmp].flag != FLAG_BOMB) {
+                        i++;
+                        box [tmp].flag = FLAG_BOMB;
+                }
 	}
 
-	//flags
-	for (int i=0;i<25;i++)	box[tmp].num=0;
-	for (int i=0;i<10;)
-	{
-		int tmp=rand()%25;
-		if (box [tmp].flag!=1)	i++,box [tmp].flag=1,box [tmp].num=-1;
-	}
-	//adj[]
-	box [0].adj []={1, 6, 5, -1};
-	box [1].adj []={0, 6, 5, 7, 2, -1};
-	box [2].adj []={1, 6, 7, 8, 3, -1};
-	box [3].adj []={2, 7, 8, 9, 4, -1};
-	box [4].adj []={8, 3, 9, -1};
-	box [5].adj []={0, 1, 6, 11, 10, -1};
-	box [6].adj []={0, 1, 2, 5, 7, 12, 11 ,10, -1};
-	box [7].adj []={1, 2, 3, 8, 13, 12, 11, 6, -1};
-	box [8].adj []={2, 3, 4, 7, 12, 13, 14, 9, -1};
-	box [9].adj []={3, 4, 8, 13, 14, -1};
-	box [10].adj []={11, 6, 5, 16, 15, -1};
-	box [11].adj []={5, 6, 7, 12, 17, 16, 15, 10, -1};
-	box [12].adj []={6, 7, 8, 13, 18, 17, 16, 11, -1};
-	box [13].adj []={17, 18, 19, 14, 9, 8, 7, 12, -1};
-	box [14].adj []={9, 8, 13, 18, 19, -1};
-	box [15].adj []={10, 11, 16, 21, 20, -1};
-	box [16].adj []={10, 15, 20, 21, 22, 17, 12, 11, -1};
-	box [17].adj []={21, 22, 23, 18, 13, 12, 11, 16, -1};
-	box [18].adj []={22, 23, 24, 19, 14, 13, 12, 17, -1};
-	box [19].adj []={24, 23, 18, 13, 14, -1};
-	box [20].adj []={15, 16, 21, -1};
-	box [21].adj []={17, 16, 15, 20, 22, -1};
-	box [22].adj []={21, 16, 17, 18, 23, -1};
-	box [23].adj []={22, 17, 24, 18, 19, -1};
-	box [24].adj []={18, 19, 23, -1};
-	//box structure
+        fillAdjBoxList ();
 
+        setAppropriateFlag ();
 }
 
 /* TODO: Check for correctness of the algo below */
@@ -169,7 +168,7 @@ myMouse (int button, int mouse_status, int x, int y)
         if (start_flag < 6) {
                 if (x > 80 && x < 120)
                         if (y > 10 && y < 30) {
-        			changeGameStatus (GAME_INPREOGRESS);  
+        			changeGameStatus (GAME_INPREOGRESS);
                         }
 
                 start_flag++;
@@ -209,7 +208,7 @@ updateBox (int bNum, int type)
                 switch (box [bNum].dispStat) {
                 case BOX_CLOSED:
                 	box [bNum].dispStat = BOX_OPENED;
-                	
+
                         if (box [bNum].flag == FLAG_BOMB)
                                 game_status = GAME_OVER;
 
@@ -254,17 +253,17 @@ void display()
 	str [12] = "5*5 Minesweeper";
 	str [20] = "by-Vasishta shastry & Uttam";
 	str [21] = "Made in Bharath";
-	
+
 	realDisplay (280,150,str [12]);
 	realDisplay (20,20,str [20]);
 	realDisplay (250,20,str [21]);
-	
+
 	switch(game_status)
 	{
 
 		//strs-starting
 		case GAME_NOT_STARTED:
-		
+
 		str [1] = "Rules and Directions";
 		str [2] = "1.10 random ones of 25 following boxex have bombs.";
 		str [3] = "Main aim of the game is to explore all boxes";
@@ -309,10 +308,10 @@ void display()
 			realDisplay (80,120,str [15]);
 			realDisplay (150,50,str [19]);
 			break;
-		
+
 		}
 			break;
-			
+
 		case GAME_INPROGRESS://draw box
 			for(int i1=0;i1<25;i1++)
 			{
@@ -336,11 +335,11 @@ void display()
 			strdisp [7] = '7';
 			strdisp [8] = '8';
 			strdisp [9] = '0';
-			
+
 			for (int o = 0;o<25;o++){
-				
+
 				switch (box [i].dispStat){
-					case BOX_MARKED:	
+					case BOX_MARKED:
 					realDisplay(box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [0]);
 					break;
 					case BOX_OPENED:
@@ -363,10 +362,10 @@ void display()
 						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [7]);
 						case FLAG_8_AROUND:
 						realDislay((box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [8]);
-						
+
 					}
 				}
-				
+
 			}
 			break;
 		case GAME_OVER://strs ending
@@ -382,16 +381,16 @@ void display()
 			str [26]="Thank You For Playing This Game";
 			str [27]="We Hope You Enjoyed The Game";
 			realDisplay(100,160,str [25]);
-			
-		
-		
-	
-	
+
+
+
+
+
 
 	}
 }
 
-void myinit()
+void myInit ()
 {
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
@@ -401,15 +400,16 @@ void myinit()
 	//glMatrixMode(GL_MODELVIEW);
 }
 
-void main()
+void main ()
 {
         glutInitDisplayMode (GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH);
         glutInitWindowSize (800,600);
         glutInitWindowPosition (100,100);
         glutCreateWindow ("Minesweeper");
+        fillBox ();
         glutDisplayFunc (display);
         glutKeyboardFunc (myKey);
         glutMouseFunc (myMouse);
-        myinit ();
+        myInit ();
         glutMainLoop ();
 }
