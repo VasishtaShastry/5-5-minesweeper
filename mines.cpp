@@ -138,11 +138,11 @@ getBox (int x, int y)
         if (isOutSideBigBoxScope (x, y))
                 return -1;
 
-       int  xColn  = (x - box [0]. cornersGUI [0][0]) / BOX_WIDTH;
+        int  xColn  = (x - box [0]. cornersGUI [0][0]) / BOX_WIDTH;
 
-       int  yColn = (y - box [0]. cornersGUI [0][1]) / BOX_HEIGHT;
-
-        return ((NxN_MineSweeper * yColn + xColn) - 1);
+        int  yColn = (y - box [0]. cornersGUI [0][1]) / BOX_HEIGHT;
+       
+        return (NxN_MineSweeper * yColn + xColn);
 }
 
 void
@@ -233,24 +233,40 @@ updateBox (int bNum, int type)
 }
 
 void
-myFunction ()
+displayBoxContent ()
 {
-        for (int o = 0;o<25;o++){
+	char *strdisp[1];
+			strdisp [0] = '0';
+			strdisp [1] = '1';
+			strdisp [2] = '2';
+			strdisp [3] = '3';
+			strdisp [4] = '4';
+			strdisp [5] = '5';
+			strdisp [6] = '6';
+			strdisp [7] = '7';
+			strdisp [8] = '8';
+			strdisp [9] = 'B';
+			strdisp [10] = 'B';
+
+        	for (int o = 0;o<25;o++){
                 switch (box [i].dispStat){
                         case BOX_MARKED:
-                        realDisplay(box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [0]);
+                 	glColor3f (1,0,0);
+                        realDisplay (box [i].cornersGUI [3][0]+10,box [i].cornersGUI [3][1]-10,strdisp [9]);
                         break;
                         case BOX_OPENED:
-                        switch (box [i].flag){
-                                realDislay (box [i].cornersGUI [3][0]+10,
-                                            box [i].cornersGUI [3][1]-10,
-                                            numberToStr (box [i].flag));
+                        realDislay (box [i].cornersGUI [3][0]+10, box [i].cornersGUI [3][1]-10,strdisp[box [i].flag]);
                         }
                 }
 
         }
 }
-
+void
+waitFinish ()
+{
+	sleep (2);
+	exit(0);
+}
 void
 display ()
 {
@@ -289,33 +305,48 @@ display ()
 
 		switch(start_flag) {
 			case 1://rule 1
+			glColor3f(1,0,0);
 			realDisplay (150,250,str [1]);
+			glColor3f(0,0,1);
 			realDisplay (80,200,str [2]);
 			realDisplay (80,160,str [3]);
 			realDisplay (80,120,str [4]);
+			glFlush ();
 			break;
+			
 			case 2://rule 2
+			glColor3f(0,0,1);
 			realDisplay (80,200,str [5]);
 			realDisplay (80,160,str [6]);
 			realDisplay (80,120,str [7]);
+			glFlush ();
 			break;
+			
 			case 3://rule 3
+			glColor3f(0,0,1);
 			realDisplay (80,200,str [8]);
 			realDisplay (80,120,str [9]);
+			glFlush ();
 			break;
 			case 4://rule 4
+			glColor3f(0,0,1);
 			realDisplay (80,200,str [10]);
 			realDisplay (80,160,str [11]);
 			realDisplay (150,120,str [12]);
+			glFlush ();
 			break;
 			case 5://rule 5
+			glColor3f(0,0,1);
 			realDisplay (80,200,str [13]);
 			realDisplay (120,160,str [14]);
 			realDisplay (80,120,str [15]);
+			glColor3f(1,0,0);
 			realDisplay (150,50,str [19]);
+			glFlush ();
 			break;
 
 		}
+		
 			break;
 
 		case GAME_INPROGRESS://draw box
@@ -330,40 +361,36 @@ display ()
 				glEnd();
 			}
 			//display b,f,num
-			char *strdisp[1];
-			strdisp [0] = 'F';
-			strdisp [1] = '1';
-			strdisp [2] = '2';
-			strdisp [3] = '3';
-			strdisp [4] = '4';
-			strdisp [5] = '5';
-			strdisp [6] = '6';
-			strdisp [7] = '7';
-			strdisp [8] = '8';
-			strdisp [9] = '0';
-
-                        myFunction ();
+                        displayBoxContent ();
+                        glFlush ();
 			break;
 		case GAME_OVER://strs ending
 			str [23] = "Oops !! You lost ; Better Luck Next Time";
+			glColor3f (1,0,0);
 			realDisplay(100,160,str [23]);
-			break;
+			glFlush ();
+			waitFinish ();
+			
 		case GAME_QUIT:
 			str [24] = "You Have Decided To Quit The Game.";
+			glColor3f (1,0,0);
 			realDisplay(100,160,str [24]);
-			break
+			glFlush ();
+			waitFinish ();
+			
 		case GAME_WON:
-			str [25] = "Congadulations!! You have Won the Game";
+			str [25] = "Congratulations!! You have Won the Game";
 			str [26]="Thank You For Playing This Game";
 			str [27]="We Hope You Enjoyed The Game";
+			glColor3f (0,0,1);
 			realDisplay(100,160,str [25]);
-
-
-
-
-
-
-	}
+			glColor3f (0,0,1);
+			realDisplay(100,120,str [26]);
+			glColor3f (0,1,0);
+			realDisplay(100,80,str [27]);
+			glFlush ();
+			waitFinish ();
+		}
 }
 
 void myInit ()
