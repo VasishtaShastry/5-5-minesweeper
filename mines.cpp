@@ -4,18 +4,18 @@
 #include "mines.h"
 
 status_t        game_status     = GAME_NOT_STARTED;
-int             start_flag      = 0; //displaying rules
+int             start_flag      = 1; //displaying rules
 mine_box_t      box [25]        = {0,};
 int bigBoxCornersGUI [4][2]     = {
-        {10, 210},                                      {190, 210},
-             /*----------------------------------------*
+        {10, 210},                                      {185, 210},
+             /*----------------------------------------*
               |                                        |
               |                                        |
               |                                        |
               |                                        |
               |                                        |
               *----------------------------------------*/
-        {10, 30},                                       {190, 30}
+        {10, 30},                                       {185, 30}
 };
 
 inline myBoolean_t
@@ -24,7 +24,7 @@ isOutSideBigBoxScope (int x_co, int y_co)
         if (x_co < bigBoxCornersGUI [0][0] || x_co > bigBoxCornersGUI [1][0])
                 return TRUE;
 
-        if (y_co < bigBoxCornersGUI [2][1] || x_co > bigBoxCornersGUI [0][1])
+        if (y_co > bigBoxCornersGUI [2][1] || x_co < bigBoxCornersGUI [0][1])
                 return TRUE;
 
         return FALSE;
@@ -138,9 +138,9 @@ getBox (int x, int y)
         if (isOutSideBigBoxScope (x, y))
                 return -1;
 
-        xColn  = (x - box [0]. cornersGUI [0][0]) / BOX_WIDTH;
+       int  xColn  = (x - box [0]. cornersGUI [0][0]) / BOX_WIDTH;
 
-        yColn = (y - box [0]. cornersGUI [0][1]) / BOX_HEIGHT;
+       int  yColn = (y - box [0]. cornersGUI [0][1]) / BOX_HEIGHT;
 
         return ((NxN_MineSweeper * yColn + xColn) - 1);
 }
@@ -149,10 +149,10 @@ void
 myMouse (int button, int mouse_status, int x, int y)
 {
         /* If the event is not GLUT_DOWN, this is of not our interest */
-	if (mouse_status != GLUT_DOWN)
+        if (mouse_status != GLUT_DOWN)
                 return;
-
-        if (start_flag < 6) {
+                
+        if (game_status != GAME_INPREOGRESS) {
                 if (x > 80 && x < 120)
                         if (y > 10 && y < 30) {
         			changeGameStatus (GAME_INPREOGRESS);
@@ -164,18 +164,17 @@ myMouse (int button, int mouse_status, int x, int y)
 
                 if (start_flag>=6) {
                         changeGameStatus (GAME_INPREOGRESS);
+                 return;
                 }
         }
-
-        if (stat_flag==1)
-                updateBox (getBox (x,y), button);	//open
+	
+        if (game_status != GAME_INPREOGRESS)	return;
+        updateBox (getBox (x,y), button);	//open
 }
 
 void
 myKey (unsigned char key ,int x,int y)
 {
-	if (key == 'e')
-                explore_box (getBox (x,y));
 
 	if (key == 'q') {
                 game_status = GAME_QUIT;
@@ -189,8 +188,9 @@ myKey (unsigned char key ,int x,int y)
  */
 void
 updateBox (int bNum, int type)
-{
-	switch(type) {
+{	
+	if (bNum<0)	return;
+	switch (type) {
         case GLUT_LEFT_BUTTON:
                 switch (box [bNum].dispStat) {
                 case BOX_CLOSED:
