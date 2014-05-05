@@ -114,10 +114,10 @@ initAdjBoxList ()
 		      {0, 1, 6, 11, 10, -1},
 		      {0, 1, 2, 5, 7, 12, 11 ,10, -1},
 		      {1, 2, 3, 8, 13, 12, 11, 6, -1},
-		      {2, 3, 4, 7, 12, 13, 14, 9, -1};
-	              {3, 4, 8, 13, 14, -1};
-	              {11, 6, 5, 16, 15, -1};
-	              {5, 6, 7, 12, 17, 16, 15, 10, -1};
+		      {2, 3, 4, 7, 12, 13, 14, 9, -1},
+	              {3, 4, 8, 13, 14, -1},
+	              {11, 6, 5, 16, 15, -1},
+	              {5, 6, 7, 12, 17, 16, 15, 10, -1},
 		      {6, 7, 8, 13, 18, 17, 16, 11, -1},
 		      {17, 18, 19, 14, 9, 8, 7, 12, -1},
 		      {9, 8, 13, 18, 19, -1},
@@ -130,7 +130,7 @@ initAdjBoxList ()
 		      {17, 16, 15, 20, 22, -1},
 		      {21, 16, 17, 18, 23, -1},
 		      {22, 17, 24, 18, 19, -1},
-		      {18, 19, 23, -1}}
+		      {18, 19, 23, -1}};
 	for (i = 0,k = 0;k<25;){
 		box [k].adjBox[i]=a[k][i];
 		if (a[k][i]==-1){
@@ -147,20 +147,20 @@ initBoxCornersGUI ()
 
 	for (i = 0; i < TOTAL_BOXES; i++) {
                 /* Bottom left */
-                box [i].cornerGUI [0][0] = x0;
-                box [i].cornerGUI [0][1] = y0;
+                box [i].cornersGUI [0][0] = x0;
+                box [i].cornersGUI [0][1] = y0;
 
                 /* Bottom right */
-                box [i].cornerGUI [1][0] = x0 + 35;
-                box [i].cornerGUI [1][1] = y0;
+                box [i].cornersGUI [1][0] = x0 + 35;
+                box [i].cornersGUI [1][1] = y0;
 
                 /* Top right */
-                box [i].cornerGUI [2][0] = x0 + 35;
-                box [i].cornerGUI [2][1] = y0 + 35;
+                box [i].cornersGUI [2][0] = x0 + 35;
+                box [i].cornersGUI [2][1] = y0 + 35;
 
                 /* Top left */
-                box [i].cornerGUI [3][0] = x0;
-                box [i].cornerGUI [3][1] = y0 + 35;
+                box [i].cornersGUI [3][0] = x0;
+                box [i].cornersGUI [3][1] = y0 + 35;
 
                 x0 += 35;
                 if (((i + 1) % 5) == 0) {
