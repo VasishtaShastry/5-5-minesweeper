@@ -1,7 +1,66 @@
 #include<math.h>
 #include<GL/glut.h>
-#include<unistd.h>
-#include "mines.h"
+#include <stdio.h>
+
+#define NxN_MineSweeper 5
+#define TOTAL_BOXES (NxN_MineSweeper * NxN_MineSweeper)
+
+#define BOX_WIDTH 35
+#define BOX_HEIGHT BOX_WIDTH
+
+typedef enum {
+	GAME_NOT_STARTED,
+        GAME_OVER,
+        GAME_WON,
+        GAME_QUIT,
+        GAME_INPROGRESS,
+} status_t;
+
+typedef enum {
+        FALSE = 0,
+        TRUE
+} myBoolean_t;
+
+typedef enum {
+        FLAG_0_AROUND = 0,
+        FLAG_1_AROUND,
+        FLAG_2_AROUND,
+        FLAG_3_AROUND,
+        FLAG_4_AROUND,
+        FLAG_5_AROUND,
+        FLAG_6_AROUND,
+        FLAG_7_AROUND,
+        FLAG_8_AROUND,
+        FLAG_BOMB,
+} flag_t;
+
+typedef enum {
+        BOX_CLOSED,
+        BOX_OPENED,
+        BOX_MARKED
+} box_stat_t;
+
+typedef struct {
+        /* Holds the GUI corner points of the box */
+	int         cornersGUI [4][2];
+
+        /* Holds the box numbers of the adjucent boxes.
+           adj_box [0] contains the number of adjucent boxes */
+	int         adjBox [9];
+
+        /* Holds the value of the box that should be displayed when opened */
+        flag_t      flag;
+
+        /* Holds the display status of the box */
+        box_stat_t  dispStat;
+} mine_box_t;
+
+//0   1  2  3  4
+//5   6  7  8  9          box structure
+//10 11 12 13 14
+//15 16 17 18 19
+//20 21 22 23 24
+
 
 status_t        game_status     = GAME_NOT_STARTED;
 int             start_flag      = 1; //displaying rules
@@ -46,31 +105,38 @@ changeGameStatus (status_t status)
 void
 initAdjBoxList ()
 {
-	box [0].adjBox [] = {1, 6, 5, -1};
-	box [1].adjBox [] = {0, 6, 5, 7, 2, -1};
-	box [2].adjBox [] = {1, 6, 7, 8, 3, -1};
-	box [3].adjBox [] = {2, 7, 8, 9, 4, -1};
-	box [4].adjBox [] = {8, 3, 9, -1};
-	box [5].adjBox [] = {0, 1, 6, 11, 10, -1};
-	box [6].adjBox [] = {0, 1, 2, 5, 7, 12, 11 ,10, -1};
-	box [7].adjBox [] = {1, 2, 3, 8, 13, 12, 11, 6, -1};
-	box [8].adjBox [] = {2, 3, 4, 7, 12, 13, 14, 9, -1};
-	box [9].adjBox [] = {3, 4, 8, 13, 14, -1};
-	box [10].adjBox [] = {11, 6, 5, 16, 15, -1};
-	box [11].adjBox [] = {5, 6, 7, 12, 17, 16, 15, 10, -1};
-	box [12].adjBox [] = {6, 7, 8, 13, 18, 17, 16, 11, -1};
-	box [13].adjBox [] = {17, 18, 19, 14, 9, 8, 7, 12, -1};
-	box [14].adjBox [] = {9, 8, 13, 18, 19, -1};
-	box [15].adjBox [] = {10, 11, 16, 21, 20, -1};
-	box [16].adjBox [] = {10, 15, 20, 21, 22, 17, 12, 11, -1};
-	box [17].adjBox [] = {21, 22, 23, 18, 13, 12, 11, 16, -1};
-	box [18].adjBox [] = {22, 23, 24, 19, 14, 13, 12, 17, -1};
-	box [19].adjBox [] = {24, 23, 18, 13, 14, -1};
-	box [20].adjBox [] = {15, 16, 21, -1};
-	box [21].adjBox [] = {17, 16, 15, 20, 22, -1};
-	box [22].adjBox [] = {21, 16, 17, 18, 23, -1};
-	box [23].adjBox [] = {22, 17, 24, 18, 19, -1};
-	box [24].adjBox [] = {18, 19, 23, -1};
+	int i,k
+	int a[25][9]={{1, 6, 5, -1},
+		      {0, 6, 5, 7, 2, -1},
+		      {1, 6, 7, 8, 3, -1},
+		      {2, 7, 8, 9, 4, -1},
+		      {8, 3, 9, -1},
+		      {0, 1, 6, 11, 10, -1},
+		      {0, 1, 2, 5, 7, 12, 11 ,10, -1},
+		      {1, 2, 3, 8, 13, 12, 11, 6, -1},
+		      {2, 3, 4, 7, 12, 13, 14, 9, -1};
+	              {3, 4, 8, 13, 14, -1};
+	              {11, 6, 5, 16, 15, -1};
+	              {5, 6, 7, 12, 17, 16, 15, 10, -1};
+		      {6, 7, 8, 13, 18, 17, 16, 11, -1},
+		      {17, 18, 19, 14, 9, 8, 7, 12, -1},
+		      {9, 8, 13, 18, 19, -1},
+		      {10, 11, 16, 21, 20, -1},
+		      {10, 15, 20, 21, 22, 17, 12, 11, -1},
+		      {21, 22, 23, 18, 13, 12, 11, 16, -1},
+		      {22, 23, 24, 19, 14, 13, 12, 17, -1},
+		      {24, 23, 18, 13, 14, -1},
+		      {15, 16, 21, -1},
+		      {17, 16, 15, 20, 22, -1},
+		      {21, 16, 17, 18, 23, -1},
+		      {22, 17, 24, 18, 19, -1},
+		      {18, 19, 23, -1}}
+	for (i = 0,k = 0;k<25;){
+		box [k].adjBox[i]=a[k][i];
+		if (a[k][i]==-1){
+			i=0;
+			k++;
+		}
 }
 
 void
@@ -81,20 +147,20 @@ initBoxCornersGUI ()
 
 	for (i = 0; i < TOTAL_BOXES; i++) {
                 /* Bottom left */
-                box [i].a [0][0] = x0;
-                box [i].a [0][1] = y0;
+                box [i].cornerGUI [0][0] = x0;
+                box [i].cornerGUI [0][1] = y0;
 
                 /* Bottom right */
-                box [i].a [1][0] = x0 + 35;
-                box [i].a [1][1] = y0;
+                box [i].cornerGUI [1][0] = x0 + 35;
+                box [i].cornerGUI [1][1] = y0;
 
                 /* Top right */
-                box [i].a [2][0] = x0 + 35;
-                box [i].a [2][1] = y0 + 35;
+                box [i].cornerGUI [2][0] = x0 + 35;
+                box [i].cornerGUI [2][1] = y0 + 35;
 
                 /* Top left */
-                box [i].a [3][0] = x0;
-                box [i].a [3][1] = y0 + 35;
+                box [i].cornerGUI [3][0] = x0;
+                box [i].cornerGUI [3][1] = y0 + 35;
 
                 x0 += 35;
                 if (((i + 1) % 5) == 0) {
